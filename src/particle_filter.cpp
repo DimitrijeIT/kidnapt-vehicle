@@ -43,7 +43,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std::normal_distribution<double> dist_y (y, std[1]);
   std::normal_distribution<double> dist_theta( theta, std[2]);
 
-  // cout << "Init" << endl;
   for(int i = 0; i< num_particles; ++i)
   {
     sample_x = dist_x(gen);
@@ -70,7 +69,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
-  // cout << "------ Predict state " << endl;
   
     std::normal_distribution<double> noise_x (0, std_pos[0]);
     std::normal_distribution<double> noise_y (0, std_pos[1]);
@@ -95,7 +93,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     p.y += noise_y(gen);
     p.theta += noise_theta(gen);
   }
-  // cout << "------ Predict end " << endl;
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 
@@ -108,7 +105,6 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
-
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
@@ -127,7 +123,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   and the following is a good resource for the actual equation to implement
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
    */
-  // cout << "Update weight state " << endl;
   for(Particle& p: particles)
   {
     //Find landmarks in sensor range from particles
@@ -142,8 +137,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
    if(landmarks_in_sensor_range.size() < observations.size()) 
    {
-     //Partivle is way off and has less landmarks in rannge than observed
-     // cout << " -------- Particle id = " << p.id << " has less landmarks on range than observed" << endl;  
+     //Particle is way off and has less landmarks in rannge than observed
      p.weight = 0;
      continue;
    }
@@ -174,15 +168,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                                           x_map, y_map, 
                                           associated_landmark.x_f, associated_landmark.y_f);
 
-      // cout << "   Observed weiht = " << observation_weight;                              
         p.weight *= observation_weight;
-        // cout << "  particle weight = " << p.weight;
-      // cout << endl;
    }
-   // cout << "Weeight id =  " << p.id << " weight = " << p.weight << " Iteration "<< iteration_num << endl;
   }
   iteration_num++;
-  // cout << "Update weight end " << endl;
 }
 
 void ParticleFilter::resample() {
@@ -193,7 +182,7 @@ void ParticleFilter::resample() {
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
   //Update weights vector
-   // cout << "Resample state " << endl;
+
   std::vector<double> weights_local;
   double sum = 0;
   for(const Particle& p : particles)
@@ -209,21 +198,16 @@ void ParticleFilter::resample() {
     normalized_sum += normalized_weight;
   }
 
-  // cout << " Normalized sum shouhdl be 1 = " << normalized_sum << endl;
-
   std::discrete_distribution<> distrbution(weights_local.begin(), weights_local.end());
   std::vector<Particle> new_particles;
   for(int i = 0; i < num_particles; ++i)
   {
     int index = distrbution(gen);
     Particle p = particles.at(index);
-    // cout << "For loop distribution index = " << index << " particle id = " << p.id << " weight = " << p.weight << endl; 
     new_particles.push_back(particles.at(index));
   }
 
-  // cout << "For end loop distribution gen  " << endl;
   particles = new_particles;
-  // cout << "Resample end " << endl;
 }
 
 void ParticleFilter::SetAssociations(Particle& particle, 
